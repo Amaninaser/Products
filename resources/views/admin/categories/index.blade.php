@@ -1,6 +1,6 @@
-<x-dashboard-layout title="Categories" subtitle="subtitle">
+<x-dashboard-layout title="Categories" >
 
-
+<x-alert />
 <div class="table toolbar mb-3">
     <a href="{{ route('admin.categories.create') }}" class="btn btn-info">Create</a>
 </div>
@@ -20,7 +20,7 @@
         <tr>
             <th>ID</th>
             <th>Name</th>
-            <th>Parent ID</th>
+            <th>Parent Name</th>
             <th>Created At</th>
             <th>Status</th>
             <th></th>
@@ -31,7 +31,7 @@
         <tr>
             <td>{{ $category->id }}</td>
             <td><a href="{{ route('admin.categories.edit', $category->id ) }}">{{ $category->name }}</a></td>
-            <td>{{ $category->parent_name}}</td>
+            <td>{{ $category->parent->name}}</td>
             <td>{{ $category->created_at }}</td>
             <td>{{ $category->sataus }}</td>
             <td>

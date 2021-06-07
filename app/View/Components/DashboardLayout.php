@@ -6,7 +6,7 @@ use Illuminate\View\Component;
 
 class DashboardLayout extends Component
 {
-    public $pageTitle;
+    public $title;
     public $subtitle;
     /**
      * Create a new component instance.
@@ -15,7 +15,7 @@ class DashboardLayout extends Component
      */
     public function __construct($title = '', $subtitle = '')
     {
-        $this->pageTitle = $title;
+        $this->title = $title;
         $this->subtitle = $subtitle;
     }
 

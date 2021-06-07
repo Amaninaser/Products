@@ -50,6 +50,7 @@
                                 {!!$errors->first("password", "<span class='text-danger'>:message</span>")!!}
                             </div>
 
+                            <?php /* 
                             <div class="form-group">
                                 <label for="Brithday"> Brithday <span class="text-danger"> * </span></label>
                                 <input type="date" max="10" name="Brithday" class="form-control" value="{{old('Brithday')}}" />
@@ -73,18 +74,20 @@
                                     {!!$errors->first("Gender", "<span class='text-danger'>:message</span>")!!}
 
                                 </div>
-                                <br>
-                            </div>
 
+                            */ ?>
+                            <br>
                         </div>
 
-                        <div class="card-footer">
-                            <button type="submit" class="btn btn-success"> Register </button>
-                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-success"> Register </button>
                     </div>
                 </div>
             </div>
-        </form>
+    </div>
+    </form>
     </div>
 
 </body>

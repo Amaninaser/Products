@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Rules\WordsFilter;
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Unique;
 
 class CategoriesController extends Controller
 {
@@ -23,11 +25,8 @@ class CategoriesController extends Controller
             ->when($request->parent_id, function ($query, $value) {
                 $query->where('categories.parent_id', '=', $value);
             })
-            ->leftJoin('categories as parents', 'parents.id', '=', 'categories.parent_id')
-            ->select([
-                'categories.*',
-                'parents.name as parent_name'
-            ])
+
+            ->with('parent')
             ->get();
 
 
@@ -80,13 +79,13 @@ class CategoriesController extends Controller
     }
     public function update(Request $request, $id)
     {
-        $this->validateReguest($request);
-
         $category = Category::find($id);
         if ($category == null) {
             abort(404);
         }
-        $this->validateReguest($request);
+        $this->validateReguest($request, $id);
+
+
         $category->name = $request->name;
         $category->slug = Str::slug($request->name);
         $category->parent_id = $request->post('parent_id', 1);
@@ -113,14 +112,32 @@ class CategoriesController extends Controller
             ->with('success', 'Category Deleted!');
     }
 
-    protected function validateReguest(Request $request)
+    protected function validateReguest(Request $request, $id = 0)
     {
         return $request->validate([
-            'name' => 'required|alpha|max:255|min:3|unique:categories,name',
-            'description' => 'nullable|min:5',
+            'name' => [
+                'required',
+                'alpha',
+                'max:255',
+                'min:3',
+                //"unique:categories,name,$id",
+                //(new Unique('Categories' , 'name'))->ignore($id),
+                Rule::unique('Categories', 'name')->ignore($id),
+            ],
+            'description' => [
+                'required',
+                'min:5',
+                'filter:laravel,php',
+                // new WordsFilter(['php' ,'laravel']),
+                /* function($attribute, $value , $fails){
+                    if(stripos($value,'laravel') !== false){
+                       $fails('You can not use the word "laravel"!');
+                    }
+                }*/
+            ],
             'parent_id' => [
                 'nullable',
-                'exists:categories,id'
+                'exists:categories,id',
             ],
             'image' => [
                 'image',
@@ -131,6 +148,20 @@ class CategoriesController extends Controller
                 'required',
                 'in:active,inactive'
             ],
+        ], [
+            'name.required' => 'هذا الحقل مطلوب'
         ]);
+    }
+    public function storeProduct(Request $request,$id)
+    {
+        $category = Category::findOrFail($id);
+       $prod = $category->prods()->create([
+            'name' => 'prod Name',
+            'price' => 10,
+        ]);
+        //$prod->category()->disassociate();
+        //$prod->save();
+        //$prod->category()->associate($category);
+        //$prod->save();
     }
 }
