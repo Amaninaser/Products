@@ -13,33 +13,51 @@
 <body>
     <header class="py-2 bg-dark text-white mb-4">
         <div class="container">
-            <h1 class="h3">{{ config('app.name' )}}</h1>
+            <div class="d-flex">
+                <h1 class="h3">{{ config('app.name' )}}</h1>
+               {{-- @if(Auth::guard('web')->check())--}}
+               @auth('web')
+                <div class="ms-auto">
+                    Hi, {{ Auth::guard('web')->user()->name }}
+
+                    <a href="#" onclick="document.getElementById('logout').submit()"> Logout </a>
+                    <form id="logout" class="d-none" action="{{ route('logout') }}" method="post">
+                        @csrf
+                    </form>
+                </div>
+                @endauth
+            </div> 
         </div>
     </header>
     <div class="container">
         <div class="row">
-            <aside class="col-md-3">
-                <h4>Navigation Menue</h4>
+            <aside class="col-md-3 ">
+                <h4>Menue</h4>
 
                 <ul class="nav nav-pills flex-column">
                     <li class="nav item"><a href="{{ route('admin.prods.index') }}" class="nav-link @if(request()->routeIs('admin.prods.index')) active @endif">Products</a></li>
                     <li class="nav item"><a href="{{ route('admin.categories.index') }}" class="nav-link @if(request()->routeIs('admin.categories.index')) active @endif">Categories</a></li>
-                    <li class="nav item"><a href="{{ route('admin.categories.index') }}" class="nav-link">User Reister</a></li>
+                    <li class="nav item"><a href="" class="nav-link">View Profile</a></li>
+                    <li class="nav item"><a href="" class="nav-link ">Users</a></li>
+                    <li class="nav item"><a href="" class="nav-link">Orders</a></li>
+                    <li class="nav item"><a href="" class="nav-link">Roles</a></li>
+
 
                 </ul>
-           
+
             </aside>
             <main class="col-md-9">
                 <div class="mb-4">
                     <h3 class="text-primary"> {{ $title ?? 'Default Title' }}</h3>
                     <h5 class="text-primary"> {{ $subtitle ?? ''}}</h5>
                 </div>
-
                 {{ $slot }}
             </main>
-
         </div>
+        
         <script src="{{ asset('js/bootstrap.bundle.min.js') }}"> </script>
+        <script src="{{ asset('js/tagify/jQuery.tagify.min.js') }}"> </script>
+
         @stack('js')
 </body>
 

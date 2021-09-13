@@ -88,7 +88,7 @@
 
 <div class="form-group mb-3">
     <label for="">Tags:</label>
-    <input type="text" name="tags" value="{{ old('tags', $tags) }}" class="tags form-control @error('tags') is-invalid @enderror">
+    <input type="text" name="tags" value="{{ old('tags', null) }}" class="tags form-control @error('tags') is-invalid @enderror">
     @error('tags')
     <p class="invalid-feedback"> {{ $message }} </p>
     @enderror
@@ -113,14 +113,24 @@
     <button type="submit" class="btn btn-primary">{{ $button_lable ?? 'Save'}}</button>
 </div>
 
+
 @push('css')
 <link rel="stylesheet" href="{{ asset('js/tagify/tagify.css') }}">
 @endpush
 
 @push('js')
-<script src="{{ asset('js/tagify/tagify.min.js') }}"> </script>
+<form action="" method="post" id="deleteGallery" class="d-none">
+@csrf
+<input type="hidden" name="id" id="imageId">
+</form>
+<script src="{{ asset('js/tagify/tagify.min.js') }}"></script>
 <script>
 var inputElm = document.querySelector('.tags'),
     tagify = new Tagify (inputElm);
+function deleteImage(id) {
+    document.querySelector('#imageId').value = id;
+    document.querySelector('#deleteGallery').submit();
+}
 </script>
 @endpush
+© 2021 GitHub, Inc.

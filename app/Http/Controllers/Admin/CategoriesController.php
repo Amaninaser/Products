@@ -48,27 +48,20 @@ class CategoriesController extends Controller
     }
     public function store(Request $request)
     {
-        $clean = $this->validateReguest($request);
-
-        $category = new Category();
-        $category->name = $clean['name'];
-        $category->slug = Str::slug($clean['name']);
-        $category->parent_id = $request->post('parent_id', 1);
-        $category->description = $clean['description'];
-        $category->sataus = $request->post('sataus');
-        $category->save();
-        session()->put('sataus', 'Category added from sataus!');
-        session()->flash('success', 'Category added!');
-        return redirect(route('admin.categories.index'));
+        $request->validate(Category::validateRoles());
+        $request->merge([
+            'slug' => Str::slug($request->post('name')),
+        ]);
+        $data = $request->all();
+        $category = Category::create($data);
+        return redirect()->route('admin.categories.index')
+            ->with('success', "Product ($category->name) created!");
     }
 
     public function edit($id)
     {
-        // $category = Category::where('id', '=', $id)->first();
         $category = Category::findOrFail($id);
-        /* if($category == null){
-            abort(404);
-        }*/
+
         $parents = Category::where('id', '<>', $id)->orderBy('name', 'asc')->get();
 
         return view('admin.categories.edit', [
@@ -79,89 +72,35 @@ class CategoriesController extends Controller
     }
     public function update(Request $request, $id)
     {
-        $category = Category::find($id);
-        if ($category == null) {
-            abort(404);
-        }
-        $this->validateReguest($request, $id);
 
+        $category = Category::findOrFail($id);
+       $request->validate(Category::validateRoles());
 
-        $category->name = $request->name;
-        $category->slug = Str::slug($request->name);
-        $category->parent_id = $request->post('parent_id', 1);
-        $category->description = $request->input('description');
-        $category->sataus = $request->input('sataus');
-        $category->save();
+        $data = $request->all();
+
+        $category->update($data);
+
         return redirect()
             ->route('admin.categories.index')
-            ->with('success', 'Category Update!');
+            ->with('success', "Category ($category->name) Update!");
     }
     public function destroy($id)
     {
-        //Method 1
-        // $category = Category::find($id);
-        //$category->delete();
 
-        //Method 2
-        // Category::where('id', '=', $id)->delete();
-
-        //Method 3
-        Category::destroy($id);
+        $category = Category::findOrFail($id);
+        $category->delete();
         return redirect()
             ->route('admin.categories.index')
-            ->with('success', 'Category Deleted!');
+            ->with('success', "Category  ($category->name) Deleted!");
     }
 
-    protected function validateReguest(Request $request, $id = 0)
-    {
-        return $request->validate([
-            'name' => [
-                'required',
-                'alpha',
-                'max:255',
-                'min:3',
-                //"unique:categories,name,$id",
-                //(new Unique('Categories' , 'name'))->ignore($id),
-                Rule::unique('Categories', 'name')->ignore($id),
-            ],
-            'description' => [
-                'required',
-                'min:5',
-                'filter:laravel,php',
-                // new WordsFilter(['php' ,'laravel']),
-                /* function($attribute, $value , $fails){
-                    if(stripos($value,'laravel') !== false){
-                       $fails('You can not use the word "laravel"!');
-                    }
-                }*/
-            ],
-            'parent_id' => [
-                'nullable',
-                'exists:categories,id',
-            ],
-            'image' => [
-                'image',
-                'max:1048576',
-                'dimensions:min_width=200,min_heigth=200'
-            ],
-            'sataus' => [
-                'required',
-                'in:active,inactive'
-            ],
-        ], [
-            'name.required' => 'هذا الحقل مطلوب'
-        ]);
-    }
-    public function storeProduct(Request $request,$id)
+
+    public function storeProduct(Request $request, $id)
     {
         $category = Category::findOrFail($id);
-       $prod = $category->prods()->create([
+        $prod = $category->prods()->create([
             'name' => 'prod Name',
             'price' => 10,
         ]);
-        //$prod->category()->disassociate();
-        //$prod->save();
-        //$prod->category()->associate($category);
-        //$prod->save();
     }
 }

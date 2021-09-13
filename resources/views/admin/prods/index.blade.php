@@ -39,7 +39,7 @@
                 <td>{{ $prod->status }}</td>
                 <td>{{ $prod->created_at }}</td>
                 <td>
-                    <form action="{{ route('admin.prods.destroy', $prod->id ) }}}" method="post">
+                    <form action="{{ route('admin.prods.destroy', $prod->id ) }}" method="post">
                         @csrf
                         @method('delete')
                         <button type="submit" class="btn btn-sm btn-danger">Delete</button>

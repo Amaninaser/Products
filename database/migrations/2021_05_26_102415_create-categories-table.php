@@ -20,9 +20,6 @@ class CreateCategoriesTable extends Migration
             $table->string('image')->nullable();
             $table->text('description')->nullable();
             $table->enum('sataus',['active','inactive']);
-
-            //$table->unsignedBigInteger('parent_id')->nullable();
-            // $table->foreign('parent_id')->references('id')->on('categories')->onDelete('set null');
             $table->foreignId('parent_id')
             ->nullable()->constrained('categories','id')->nullOnDelete();
            

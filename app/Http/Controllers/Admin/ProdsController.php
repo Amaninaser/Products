@@ -24,7 +24,7 @@ public function index()
         $prods = Prod::with('category')
             ->latest()
             ->orderBy('name', 'ASC')
-            ->paginate(5);
+            ->paginate(2);
         return view('admin.prods.index', [
             'prods' => $prods,
             'categories' => Category::all(),
@@ -67,16 +67,23 @@ public function index()
                 'disk' => 'uploads'
             ]);
         }
-
-        /* $data = $request->all();
-        $data['slug'] = Str::slug($data['name']);
-        $prod = Prod::create($data); */
-
-        /* $prod = new Prod($request->all());
-           $prod->save();
-        */
-
         $prod = Prod::create($data);
+
+        if($request->hasFile('gallery')){
+            foreach($request->file('gallery') as $file){
+                $image_path = $file->store('/images',[
+                    'disk' => 'uploads'
+                ]);
+             
+              $image = new ProdImage([
+                'image_path' => $image_path,
+              ]);
+              $prod->images()->save($image);
+            }
+        }
+      
+      
+    
         $prod->tags()->attach($this->getTags($request));
 
         return redirect()->route('admin.prods.index')

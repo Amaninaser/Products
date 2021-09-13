@@ -5,16 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Validation\Rule;
 
 class Category extends Model
 {
     use HasFactory;
-    //rules 
-    public static function rules(){
-        return [
+    protected $fillable = [
+        'name', 'image', 'description', 'sataus', 'parent_id', 'slug'  ];
 
-        ];
-    }
     
     public function prods()
     {
@@ -31,4 +29,36 @@ class Category extends Model
         ]);   
     }
 
+    public static function validateRoles()
+    {
+        return[
+            'name' => [
+                'required',
+                'alpha',
+                'max:255',
+                'min:3',
+            
+              //Rule::unique('Categories', 'name')->ignore($id),
+            ],
+            'description' => [
+                'required',
+                'min:5',
+                'filter:laravel,php',
+            
+            ],
+            'parent_id' => [
+                'nullable',
+                'exists:categories,id',
+            ],
+            'image' => [
+                'image',
+                'max:1048576',
+                'dimensions:min_width=200,min_heigth=200'
+            ],
+            'sataus' => [
+                'required',
+                'in:active,inactive'
+            ],
+        ];
+    }
 }
